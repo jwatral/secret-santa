@@ -1,0 +1,9 @@
+# This is required for the autoconfiguration to kick in, should be overwritten in application-secret.yml
+spring:
+  mail:
+    host: example.com
+
+internal:
+  default-subject: "Secret santa!"
+  default-from: me@example.com
+  default-email: me@example.com
