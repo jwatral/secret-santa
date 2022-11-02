@@ -1,6 +1,7 @@
 .gradle
 build/
 application-secret.yml
+src/main/resources/participants.json
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

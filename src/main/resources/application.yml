@@ -7,3 +7,4 @@ internal:
   default-subject: "Secret santa!"
   default-from: me@example.com
   default-email: me@example.com
+  participant-file-location: "classpath:participants.json"
