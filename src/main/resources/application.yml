@@ -4,10 +4,15 @@ spring:
     banner-mode: off
   mail:
     host: example.com
+logging:
+  level:
+    root: INFO
 
 internal:
   default-subject: "Secret santa!"
-  default-from: me@example.com
+  default-from: "SecretSanta <me@example.com>"
   default-email: me@example.com
-  participant-file-location: "classpath:participants.json"
+  participant-file-location: "classpath:participants/participants.json"
   text-template: "Hi {who}! You're a secret santa for {giftFor} this year!"
+  do-send: false
+  use-test-email: false

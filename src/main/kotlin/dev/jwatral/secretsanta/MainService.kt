@@ -13,15 +13,15 @@ class MainService(
     private val emailService: EmailService,
     @Value("\${internal.text-template}") private val textTemplate: String,
     @Value("\${internal.default-email}") private val defaultEmail: String,
+    @Value("\${internal.do-send}") private val doSend: Boolean,
+    @Value("\${internal.use-test-email}") private val useTestEmail: Boolean,
 ) : CommandLineRunner {
 
     private val log = KotlinLogging.logger { }
 
     override fun run(vararg args: String) {
         log.info { "Started with args: ${args.asList()}" }
-        val doSend = args.contains("doSend")
         log.info { "doSend param is $doSend - app ${if (doSend) "will" else "won't"} send emails." }
-        val testEmail = args.contains("testEmail")
         val participants = participantReader.parseParticipants()
         log.info { "Loaded following participants: $participants" }
         val matched = matcherService.matchParticipants(participants)
@@ -37,13 +37,13 @@ class MainService(
         }
         matched.forEach { (who, whom) ->
             log.info { "Notifying ${who.participant.name} about being secret santa for ${whom.participant.name}" }
-            sendEmail(who.participant, whom.participant, doSend, testEmail)
+            sendEmail(who.participant, whom.participant)
         }
     }
 
-    private fun sendEmail(who: Participant, whom: Participant, doSend: Boolean, testEmail: Boolean) {
+    private fun sendEmail(who: Participant, whom: Participant) {
         emailService.send(
-            mail = if (testEmail) defaultEmail else who.email,
+            mail = if (useTestEmail) defaultEmail else who.email,
             text = textTemplate.replace("{who}", who.name).replace("{giftFor}", whom.name),
             doSend = doSend
         )
