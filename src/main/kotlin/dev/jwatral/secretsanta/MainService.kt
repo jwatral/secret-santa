@@ -35,16 +35,21 @@ class MainService(
                 return
             }
         }
-        matched.forEach { (who, whom) ->
-            log.info { "Notifying ${who.participant.name} about being secret santa for ${whom.participant.name}" }
-            sendEmail(who.participant, whom.participant)
-        }
+        matched
+            .groupBy { it.first.participant.email }
+            .forEach { (email, matchedParticipants) ->
+                sendGroupedEmail(email, matchedParticipants)
+            }
     }
 
-    private fun sendEmail(who: Participant, whom: Participant) {
+    private fun sendGroupedEmail(email: String, participants: MatchedParticipants) {
+        val text = participants.joinToString("\n") { (who, whom) ->
+            log.info { "Notifying ${who.participant.name} about being secret santa for ${whom.participant.name}" }
+            textTemplate.replace("{who}", who.participant.name).replace("{giftFor}", whom.participant.name)
+        }
         emailService.send(
-            mail = if (useTestEmail) defaultEmail else who.email,
-            text = textTemplate.replace("{who}", who.name).replace("{giftFor}", whom.name),
+            mail = if (useTestEmail) defaultEmail else email,
+            text = text,
             doSend = doSend
         )
     }

@@ -7,7 +7,7 @@ class MatcherServiceTest {
 
     @Test
     fun `four participants in two groups should not be matched within same group`() {
-        val service = MatcherService()
+        val service = MatcherService(100)
 
         val participant1 = participant("1_1")
         val participant2 = participant("2_1")

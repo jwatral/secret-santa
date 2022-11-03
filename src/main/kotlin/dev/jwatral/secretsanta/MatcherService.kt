@@ -1,17 +1,24 @@
 package dev.jwatral.secretsanta
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.lang.RuntimeException
 
 @Service
-class MatcherService {
+class MatcherService(
+    @Value("\${internal.max-shuffles}") private val maxShuffles: Int
+) {
 
-    fun matchParticipants(participants: Participants): MatchedParticipants =
-        participants
-            .mapIndexed{ index, list -> list.map { ParticipantWithGroup(it, index) } }
-            .shuffled()
-            .map { it.shuffled() }
-            .transpose()
-            .flatten()
-            .zipWithNext()
-            .let { it + (it.last().second to it.first().first) }
+    fun matchParticipants(participants: Participants): MatchedParticipants {
+        val participantsWithGroups = participants.flatMapIndexed { index: Int, list: List<Participant> -> list.map { ParticipantWithGroup(it, index) } }
+        var counter = 0
+        while (counter < maxShuffles) {
+            val pairs = participantsWithGroups.shuffled().zipWithNext().let { it + (it.last().second to it.first().first) }
+            if (pairs.none { it.first.group == it.second.group }) {
+                return pairs
+            }
+            counter++
+        }
+        throw RuntimeException("Did not found solution after $maxShuffles shuffles.")
+    }
 }

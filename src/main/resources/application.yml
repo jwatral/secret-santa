@@ -16,3 +16,4 @@ internal:
   text-template: "Hi {who}! You're a secret santa for {giftFor} this year!"
   do-send: false
   use-test-email: false
+  max-shuffles: 100000

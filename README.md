@@ -6,6 +6,10 @@ Simple app for matching a bunch of friends so that everyone gets 1 gift, prefera
 
 TODO: describe fields required in `application-secret.yml`
 
+```shell
+./gradlew bootRun --args='--spring.profiles.active=dev'
+```
+
 ## development
 
 ```shell

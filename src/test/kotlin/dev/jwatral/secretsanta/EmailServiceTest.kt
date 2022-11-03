@@ -18,6 +18,6 @@ class EmailServiceTest {
 
     @Test
     internal fun sendAnEmail() {
-        emailService.send(defaultEmail, "Test text", "Test subject")
+        emailService.send(defaultEmail, "Test text", false, "Test subject")
     }
 }
