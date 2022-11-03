@@ -1,5 +1,7 @@
 # This is required for the autoconfiguration to kick in, should be overwritten in application-secret.yml
 spring:
+  main:
+    banner-mode: off
   mail:
     host: example.com
 
@@ -8,3 +10,4 @@ internal:
   default-from: me@example.com
   default-email: me@example.com
   participant-file-location: "classpath:participants.json"
+  text-template: "Hi {who}! You're a secret santa for {giftFor} this year!"

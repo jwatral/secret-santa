@@ -1,5 +1,6 @@
 package dev.jwatral.secretsanta
 
+import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
@@ -12,9 +13,12 @@ class EmailService(
     @Value("\${internal.default-from}") val defaultFrom: String,
 ) {
 
+    private val log = KotlinLogging.logger { }
+
     fun send(
         mail: String,
         text: String,
+        doSend: Boolean = false,
         subject: String = defaultSubject,
         from: String = defaultFrom,
     ) {
@@ -24,6 +28,9 @@ class EmailService(
             setSubject(subject)
             setFrom(from)
         }
-        javaMailSender.send(msg)
+        log.info(msg.toString())
+        if (doSend) {
+            javaMailSender.send(msg)
+        }
     }
 }
