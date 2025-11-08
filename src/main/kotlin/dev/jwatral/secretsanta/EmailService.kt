@@ -1,10 +1,17 @@
 package dev.jwatral.secretsanta
 
+import com.github.michaelbull.retry.policy.constantDelay
+import com.github.michaelbull.retry.policy.limitAttempts
+import com.github.michaelbull.retry.policy.plus
+import com.github.michaelbull.retry.retry
+import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @Service
 class EmailService(
@@ -15,7 +22,7 @@ class EmailService(
 
     private val log = KotlinLogging.logger { }
 
-    fun send(
+    suspend fun send(
         mail: String,
         text: String,
         doSend: Boolean = false,
@@ -30,7 +37,11 @@ class EmailService(
         }
         log.info(msg.toString())
         if (doSend) {
-            javaMailSender.send(msg)
+            retry(limitAttempts(3) + constantDelay(10000)) {
+                withTimeout(20.toDuration(DurationUnit.SECONDS)) {
+                    javaMailSender.send(msg)
+                }
+            }
         }
     }
 }

@@ -1,12 +1,15 @@
 package dev.jwatral.secretsanta
 
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
+@Profile("!test")
 class MainService(
     private val participantReader: ParticipantReader,
     private val matcherService: MatcherService,
@@ -19,7 +22,7 @@ class MainService(
 
     private val log = KotlinLogging.logger { }
 
-    override fun run(vararg args: String) {
+    override fun run(vararg args: String) = runBlocking {
         log.info { "Started with args: ${args.asList()}" }
         log.info { "doSend param is $doSend - app ${if (doSend) "will" else "won't"} send emails." }
         val participants = participantReader.parseParticipants()
@@ -32,7 +35,7 @@ class MainService(
             println(matchedFromTheSameGroup.prettyPrint())
             val input = readln()
             if (input != "yes") {
-                return
+                return@runBlocking
             }
         }
         matched
@@ -42,7 +45,7 @@ class MainService(
             }
     }
 
-    private fun sendGroupedEmail(email: String, participants: MatchedParticipants) {
+    private suspend fun sendGroupedEmail(email: String, participants: MatchedParticipants) {
         val text = participants.joinToString("\n") { (who, whom) ->
             log.info { "Notifying ${who.participant.name} about being secret santa for ${whom.participant.name}" }
             textTemplate.replace("{who}", who.participant.name).replace("{giftFor}", whom.participant.name)
