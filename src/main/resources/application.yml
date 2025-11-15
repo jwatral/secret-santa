@@ -17,3 +17,4 @@ internal:
   do-send: false
   use-test-email: false
   max-shuffles: 100000
+  matcher-strategy: "backtracking" # Can be "backtracking" or "shuffle"

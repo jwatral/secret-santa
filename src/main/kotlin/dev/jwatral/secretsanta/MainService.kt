@@ -18,31 +18,40 @@ class MainService(
     @Value("\${internal.default-email}") private val defaultEmail: String,
     @Value("\${internal.do-send}") private val doSend: Boolean,
     @Value("\${internal.use-test-email}") private val useTestEmail: Boolean,
+    @Value("\${internal.matcher-strategy}") private val matcherStrategy: String,
 ) : CommandLineRunner {
 
     private val log = KotlinLogging.logger { }
 
     override fun run(vararg args: String) = runBlocking {
         log.info { "Started with args: ${args.asList()}" }
+        log.info { "Using '$matcherStrategy' matching strategy." }
         log.info { "doSend param is $doSend - app ${if (doSend) "will" else "won't"} send emails." }
         val participants = participantReader.parseParticipants()
         log.info { "Loaded following participants: $participants" }
         val matched = matcherService.matchParticipants(participants)
         log.info { "Matched participants: ${matched.prettyPrint()}" }
-        val matchedFromTheSameGroup = matched.filter { it.first.group == it.second.group }
-        if (matchedFromTheSameGroup.isNotEmpty()) {
-            println("Following matched participants are from the same groups, continue anyway (type 'yes')?")
-            println(matchedFromTheSameGroup.prettyPrint())
-            val input = readln()
-            if (input != "yes") {
-                return@runBlocking
-            }
-        }
+        validateMatches(participants, matched)
         matched
             .groupBy { it.first.participant.email }
             .forEach { (email, matchedParticipants) ->
                 sendGroupedEmail(email, matchedParticipants)
             }
+    }
+
+    private fun validateMatches(participants: Participants, matched: MatchedParticipants) {
+        val givers = matched.map { it.first.participant }.toSet()
+        val receivers = matched.map { it.second.participant }.toSet()
+        val participantsSet = participants.flatten().toSet()
+
+        if (givers != participantsSet || receivers != participantsSet) {
+            log.error { "Validation failed: Not all participants give and receive exactly one gift." }
+            log.error { "Participants: $participantsSet" }
+            log.error { "Givers:       $givers" }
+            log.error { "Receivers:    $receivers" }
+            throw IllegalStateException("Matching validation failed.")
+        }
+        log.info { "Validation of matches was successful." }
     }
 
     private suspend fun sendGroupedEmail(email: String, participants: MatchedParticipants) {
