@@ -1,0 +1,7 @@
+logging:
+  level:
+    root: DEBUG
+
+internal:
+  do-send: false
+  use-test-email: true

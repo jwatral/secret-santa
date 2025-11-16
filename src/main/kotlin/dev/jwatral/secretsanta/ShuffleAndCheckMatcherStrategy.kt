@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("!test")
 @ConditionalOnProperty(name = ["internal.matcher-strategy"], havingValue = "shuffle")
 class ShuffleAndCheckMatcherStrategy(
     @Value("\${internal.max-shuffles}") private val maxShuffles: Int

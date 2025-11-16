@@ -8,10 +8,9 @@ import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
 @SpringBootTest(properties = ["internal.participant-file-location=classpath:testParticipantsEmpty.json"])
-class ParticipantReaderTest {
-
-    @Autowired
-    lateinit var participantReader: ParticipantReader
+class ParticipantReaderTest @Autowired constructor(
+    private val participantReader: ParticipantReader
+) {
 
     @Test
     fun testParticipantReaderForDefaultFileLocation() {

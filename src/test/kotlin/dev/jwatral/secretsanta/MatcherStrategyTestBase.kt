@@ -19,8 +19,8 @@ abstract class MatcherStrategyTestBase {
         )
         val result = matcher.match(participants)
         assertEquals(3, result.size)
-        val givers = result.map { it.first.participant }
-        val receivers = result.map { it.second.participant }
+        val givers = result.map { it.giver.participant }
+        val receivers = result.map { it.receiver.participant }
         assertTrue(givers.containsAll(participants.flatten()))
         assertTrue(receivers.containsAll(participants.flatten()))
     }
@@ -71,8 +71,8 @@ abstract class MatcherStrategyTestBase {
         )
         val result = matcher.match(participants)
         assertEquals(6, result.size)
-        val givers = result.map { it.first.participant }
-        val receivers = result.map { it.second.participant }
+        val givers = result.map { it.giver.participant }
+        val receivers = result.map { it.receiver.participant }
         assertTrue(givers.containsAll(participants.flatten()))
         assertTrue(receivers.containsAll(participants.flatten()))
     }
