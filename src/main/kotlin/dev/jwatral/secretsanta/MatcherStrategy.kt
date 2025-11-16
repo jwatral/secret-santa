@@ -1,5 +1,5 @@
 package dev.jwatral.secretsanta
 
 interface MatcherStrategy {
-    fun match(participants: Participants): MatchedParticipants
+    fun match(participants: Participants): List<MatchedParticipant>
 }

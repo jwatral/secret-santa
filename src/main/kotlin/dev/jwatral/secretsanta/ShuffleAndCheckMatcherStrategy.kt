@@ -15,20 +15,20 @@ class ShuffleAndCheckMatcherStrategy(
 
     private val log = KotlinLogging.logger { }
 
-    override fun match(participants: Participants): MatchedParticipants {
+    override fun match(participants: Participants): List<MatchedParticipant> {
         val participantsWithGroups =
             participants.flatMapIndexed { index, list -> list.map { ParticipantWithGroup(it, index) } }
 
         repeat(maxShuffles) { i ->
             val givers = participantsWithGroups
             val receivers = givers.shuffled()
-            val pairs = givers.zip(receivers)
+            val pairs = givers.zip(receivers).map { (giver, receiver) -> MatchedParticipant(giver, receiver) }
             val pairsSet = pairs.toSet()
 
             if (pairs.none { (giver, receiver) ->
                     giver.group == receiver.group ||
                     giver.participant == receiver.participant ||
-                    pairsSet.contains(receiver to giver)
+                    pairsSet.contains(MatchedParticipant(receiver, giver))
                 }) {
                 log.info { "Matched participants after [${i + 1}] shuffles using shuffle-and-check strategy." }
                 return pairs

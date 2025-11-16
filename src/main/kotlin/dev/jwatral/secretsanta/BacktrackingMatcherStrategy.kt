@@ -12,13 +12,13 @@ class BacktrackingMatcherStrategy : MatcherStrategy {
 
     private val log = KotlinLogging.logger { }
 
-    override fun match(participants: Participants): MatchedParticipants {
+    override fun match(participants: Participants): List<MatchedParticipant> {
         val participantsWithGroups =
             participants.flatMapIndexed { index, list -> list.map { ParticipantWithGroup(it, index) } }
 
         val givers = participantsWithGroups.shuffled()
         val receivers = participantsWithGroups.toMutableList()
-        val assignments = mutableListOf<Pair<ParticipantWithGroup, ParticipantWithGroup>>()
+        val assignments = mutableListOf<MatchedParticipant>()
 
         if (findAssignments(givers, receivers, assignments)) {
             log.info { "Successfully matched all participants using backtracking strategy." }
@@ -31,7 +31,7 @@ class BacktrackingMatcherStrategy : MatcherStrategy {
     private fun findAssignments(
         givers: List<ParticipantWithGroup>,
         availableReceivers: MutableList<ParticipantWithGroup>,
-        assignments: MutableList<Pair<ParticipantWithGroup, ParticipantWithGroup>>
+        assignments: MutableList<MatchedParticipant>
     ): Boolean {
         if (givers.isEmpty()) return true
 
@@ -39,7 +39,7 @@ class BacktrackingMatcherStrategy : MatcherStrategy {
 
         for (receiver in availableReceivers.shuffled()) {
             if (giver.participant != receiver.participant && giver.group != receiver.group) {
-                assignments.add(giver to receiver)
+                assignments.add(MatchedParticipant(giver, receiver))
                 availableReceivers.remove(receiver)
 
                 if (findAssignments(givers.drop(1), availableReceivers, assignments)) return true

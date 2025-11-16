@@ -33,15 +33,15 @@ class MainService(
         log.info { "Matched participants: ${matched.prettyPrint()}" }
         validateMatches(participants, matched)
         matched
-            .groupBy { it.first.participant.email }
+            .groupBy { it.giver.participant.email }
             .forEach { (email, matchedParticipants) ->
                 sendGroupedEmail(email, matchedParticipants)
             }
     }
 
-    private fun validateMatches(participants: Participants, matched: MatchedParticipants) {
-        val givers = matched.map { it.first.participant }.toSet()
-        val receivers = matched.map { it.second.participant }.toSet()
+    private fun validateMatches(participants: Participants, matched: List<MatchedParticipant>) {
+        val givers = matched.map { it.giver.participant }.toSet()
+        val receivers = matched.map { it.receiver.participant }.toSet()
         val participantsSet = participants.flatten().toSet()
 
         if (givers != participantsSet || receivers != participantsSet) {
@@ -54,7 +54,7 @@ class MainService(
         log.info { "Validation of matches was successful." }
     }
 
-    private suspend fun sendGroupedEmail(email: String, participants: MatchedParticipants) {
+    private suspend fun sendGroupedEmail(email: String, participants: List<MatchedParticipant>) {
         val text = participants.joinToString("\n") { (who, whom) ->
             log.info { "Notifying ${who.participant.name} about being secret santa for ${whom.participant.name}" }
             textTemplate.replace("{who}", who.participant.name).replace("{giftFor}", whom.participant.name)

@@ -6,4 +6,4 @@ data class ParticipantWithGroup(val participant: Participant, val group: Int)
 
 typealias Participants = List<List<Participant>>
 
-typealias MatchedParticipants = List<Pair<ParticipantWithGroup, ParticipantWithGroup>>
+data class MatchedParticipant(val giver: ParticipantWithGroup, val receiver: ParticipantWithGroup)

@@ -1,4 +1,4 @@
 package dev.jwatral.secretsanta
 
-fun MatchedParticipants.prettyPrint() = this.joinToString { it.first.participant.name + " -> " + it.second.participant.name }
+fun List<MatchedParticipant>.prettyPrint() = this.joinToString { it.giver.participant.name + " -> " + it.receiver.participant.name }
 
