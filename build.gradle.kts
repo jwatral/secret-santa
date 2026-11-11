@@ -36,3 +36,8 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+// santa.sh asks for confirmation (typed into the running app) before sending emails
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    standardInput = System.`in`
+}

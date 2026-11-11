@@ -27,6 +27,19 @@ spring:
 ./gradlew bootRun --args='--spring.profiles.active=dev'
 ```
 
+### santa.sh
+
+Profiles (e.g. `fwb`, `kids`) are defined in `application-secret.yml`; the `secret` profile is always active.
+Year defaults to the current year and is used in email subjects (`SecretSanta <year> - <event-name>: ...`).
+
+```shell
+./santa.sh dry-run kids              # match + print pairs, sends nothing
+./santa.sh smtp-test                 # send ONE test email to internal.default-email
+./santa.sh run kids [--year 2026]    # send real emails, log to src/main/resources/participants/<year>_<name>.log
+```
+
+`run` asks for confirmation (skip with `--yes`) and refuses to run if that year's log already exists (override with `--force`).
+
 ## development
 
 ```shell

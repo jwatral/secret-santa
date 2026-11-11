@@ -9,12 +9,15 @@ logging:
     root: INFO
 
 internal:
-  default-subject: "Secret santa!"
   default-from: "SecretSanta <me@example.com>"
   default-email: me@example.com
   participant-file-location: "classpath:participants/participants.json"
-  text-template: "Hi {who}! You're a secret santa for {giftFor} this year!"
-  do-send: false
+  do-send: true
   use-test-email: false
   max-shuffles: 100000
   matcher-strategy: "backtracking" # Can be "backtracking" or "shuffle"
+  smtp-test: false # when true, only sends one test email to default-email (no matching)
+  confirm-before-send: false # when true (and do-send), shows pairs and waits for "send" on stdin
+#  year: 2026      # defaults to the current year; used in email subjects
+#  event-name: ""  # optional, e.g. "Dorośli" -> subject "SecretSanta 2026 - Dorośli: ..."
+#  extra-details: "" # optional paragraph added to the email body, e.g. date and place of the party
